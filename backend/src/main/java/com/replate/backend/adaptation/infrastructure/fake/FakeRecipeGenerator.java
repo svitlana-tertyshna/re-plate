@@ -24,8 +24,8 @@ public class FakeRecipeGenerator implements RecipeGenerator {
 							"Cook the pasta.",
 							"Heat the oat cream.",
 							"Add nutritional yeast and combine."),
-					List.of("Diary cream replaced with oat cream."),
-					List.of("Demo only the submitted recipe was not analyzed."));
+					List.of("Dairy cream replaced with oat cream."),
+					List.of("Demo only: the submitted recipe was not analyzed."));
 
 			case CALORIE_CONSCIOUS -> new GeneratedRecipe(
 					"Demo Light Pasta",
