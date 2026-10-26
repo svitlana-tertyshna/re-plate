@@ -1,4 +1,4 @@
-package com.replate.backend.api;
+package com.replate.backend.adaptation.api;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,7 +26,7 @@ class AdaptationControllerTest {
 	private AdaptationService adaptationService;
 
 	@Test
-	void souldAcceptValidRequest() throws Exception {
+	void shouldAcceptValidRequest() throws Exception {
 		when(adaptationService.getStatus()).thenReturn("VALIDATED_ONLY");
 
 		String request = """
@@ -63,7 +63,7 @@ class AdaptationControllerTest {
 	}
 
 	@Test
-	void shouldRejectUnsuppoetedGoal() throws Exception {
+	void shouldRejectUnsupportedGoal() throws Exception {
 		String request = """
 				    {
 				        "recipeText": "200g pasta.",
@@ -78,10 +78,10 @@ class AdaptationControllerTest {
 	}
 
 	@Test
-	void shouldRejectMissindGoal() throws Exception {
+	void shouldRejectMissingGoal() throws Exception {
 		String request = """
 				    {
-				        "recipeText": "200 g pasta.",
+				        "recipeText": "200 g pasta."
 				    }
 				""";
 

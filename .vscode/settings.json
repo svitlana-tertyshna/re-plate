@@ -1,0 +1,19 @@
+{
+    "java.compile.nullAnalysis.mode": "automatic",
+    "editor.formatOnSave": true,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2,
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "files.eol": "\n",
+    "[java]": {
+        "editor.defaultFormatter": "redhat.java",
+        "editor.insertSpaces": false,
+        "editor.tabSize": 4
+    },
+    "[xml]": {
+        "editor.defaultFormatter": "redhat.vscode-xml",
+        "editor.insertSpaces": false,
+        "editor.tabSize": 4
+    }
+}
