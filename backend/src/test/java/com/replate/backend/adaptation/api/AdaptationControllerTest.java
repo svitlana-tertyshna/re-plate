@@ -6,6 +6,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -13,8 +15,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.replate.backend.adaptation.api.AdaptationController;
 import com.replate.backend.adaptation.application.AdaptationService;
+import com.replate.backend.adaptation.application.model.GeneratedRecipe;
+import com.replate.backend.adaptation.domain.AdaptationGoal;
 
 @WebMvcTest(AdaptationController.class)
 class AdaptationControllerTest {
@@ -27,24 +30,35 @@ class AdaptationControllerTest {
 
 	@Test
 	void shouldAcceptValidRequest() throws Exception {
-		when(adaptationService.getStatus()).thenReturn("VALIDATED_ONLY");
 
 		String request = """
 				{
-				    "recipeText": "200g pasta and 100 ml cream.",
-				    "goal": "VEGAN"
+				  "recipeText": "200 g pasta.",
+				  "goal": "VEGAN"
 				}
 				""";
 
-		mockMvc.perform(post("/api/v1/adaptations")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(request)).andExpect(status().isOk())
-				.andExpect(jsonPath("$.status")
-						.value("VALIDATED_ONLY"))
-				.andExpect(jsonPath("$.goal")
-						.value("VEGAN"));
+		GeneratedRecipe generated = new GeneratedRecipe(
+				"Demo Vegan Pasta",
+				List.of("200 g egg-free pasta"),
+				List.of("Cook the pasta."),
+				List.of("Replaced regular pasta"),
+				List.of("Demo only"));
 
-		verify(adaptationService).getStatus();
+		when(adaptationService.adapt("200 g pasta.", AdaptationGoal.VEGAN))
+				.thenReturn(generated);
+
+		mockMvc.perform(
+				post("/api/v1/adaptations")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(request))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.goal").value("VEGAN"))
+				.andExpect(jsonPath("$.recipe.title").value("Demo Vegan Pasta"))
+				.andExpect(jsonPath("$.recipe.ingredients[0]").value("200 g egg-free pasta"));
+
+		verify(adaptationService)
+				.adapt("200 g pasta.", AdaptationGoal.VEGAN);
 	}
 
 	@Test
@@ -65,11 +79,11 @@ class AdaptationControllerTest {
 	@Test
 	void shouldRejectUnsupportedGoal() throws Exception {
 		String request = """
-				    {
-				        "recipeText": "200g pasta.",
-				        "goal": "KETO"
-				    }
-				""";
+							    {
+							        "recipeText": "200g pasta.",
+							        "goal": "KETO"
+				}
+							""";
 
 		mockMvc.perform(post("/api/v1/adaptations")
 				.contentType(MediaType.APPLICATION_JSON)
