@@ -1,6 +1,7 @@
 package com.replate.backend.adaptation.api;
 
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -73,7 +74,11 @@ class AdaptationControllerTest {
 		mockMvc.perform(post("/api/v1/adaptations")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(request))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status").value(400))
+				.andExpect(jsonPath("$.title").value("Validation failed"))
+				.andExpect(jsonPath("$.errors.recipeText")
+						.value("must not be blank"));
 	}
 
 	@Test
@@ -88,7 +93,12 @@ class AdaptationControllerTest {
 		mockMvc.perform(post("/api/v1/adaptations")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(request))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status").value(400))
+				.andExpect(jsonPath("$.title")
+						.value("Invalid request body"))
+				.andExpect(jsonPath("$.errors.request")
+						.value("Invalid JSON or unsupported field value"));
 	}
 
 	@Test
@@ -102,6 +112,33 @@ class AdaptationControllerTest {
 		mockMvc.perform(post("/api/v1/adaptations")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(request))
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status").value(400))
+				.andExpect(jsonPath("$.title").value("Validation failed"))
+				.andExpect(jsonPath("$.errors.goal")
+						.value("must not be null"));
 	}
+
+	@Test
+	void shouldRejectMalformedJson() throws Exception {
+		String request = """
+				{
+				    "recipeText": "200 g pasta."
+				    "goal": "VEGAN"
+				}
+				""";
+
+		mockMvc.perform(post("/api/v1/adaptations")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(request))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status").value(400))
+				.andExpect(jsonPath("$.title")
+						.value("Invalid request body"))
+				.andExpect(jsonPath("$.errors.request")
+						.value("Invalid JSON or unsupported field value"));
+
+		verifyNoInteractions(adaptationService);
+	}
+
 }
