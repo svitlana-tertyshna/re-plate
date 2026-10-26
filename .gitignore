@@ -1,0 +1,17 @@
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Java build output
+**/target/
+
+# Node.js dependencies
+**/node_modules/
+
+# Local IDE files
+.idea/
+*.iml
+
+# VS Code
+.vscode/
