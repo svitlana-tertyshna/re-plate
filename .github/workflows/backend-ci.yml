@@ -14,6 +14,26 @@ jobs:
   backend-tests:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: replate
+          POSTGRES_USER: replate
+          POSTGRES_PASSWORD: ci_test_password
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U replate -d replate"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      REPLATE_DB_URL: jdbc:postgresql://localhost:5433/replate
+      REPLATE_DB_USER: replate
+      REPLATE_DB_PASSWORD: ci_test_password
+
     defaults:
       run:
         working-directory: backend
