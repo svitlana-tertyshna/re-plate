@@ -1,7 +1,10 @@
 package com.replate.backend.adaptation.application;
 
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 
+import com.replate.backend.adaptation.application.model.AdaptationResult;
 import com.replate.backend.adaptation.application.model.GeneratedRecipe;
 import com.replate.backend.adaptation.application.port.RecipeGenerator;
 import com.replate.backend.adaptation.domain.AdaptationGoal;
@@ -10,12 +13,18 @@ import com.replate.backend.adaptation.domain.AdaptationGoal;
 public class AdaptationService {
 
 	private final RecipeGenerator recipeGenerator;
+	private final AdaptationPersistenceService persistenceService;
 
-	public AdaptationService(RecipeGenerator recipeGenerator) {
+	public AdaptationService(RecipeGenerator recipeGenerator, AdaptationPersistenceService persistenceService) {
 		this.recipeGenerator = recipeGenerator;
+		this.persistenceService = persistenceService;
 	}
 
-	public GeneratedRecipe adapt(String recipeText, AdaptationGoal goal) {
-		return recipeGenerator.generate(recipeText, goal);
+	public AdaptationResult adapt(String recipeText, AdaptationGoal goal) {
+		GeneratedRecipe generated = recipeGenerator.generate(recipeText, goal);
+
+		UUID adaptationId = persistenceService.save(recipeText, goal, generated);
+
+		return new AdaptationResult(adaptationId, generated);
 	}
 }

@@ -1,5 +1,6 @@
 package com.replate.backend.adaptation.api;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -7,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.replate.backend.adaptation.application.AdaptationService;
-import com.replate.backend.adaptation.application.model.GeneratedRecipe;
+import com.replate.backend.adaptation.application.model.AdaptationResult;
 
 import jakarta.validation.Valid;
 
@@ -25,14 +26,15 @@ public class AdaptationController {
 	public ResponseEntity<AdaptationResponseDto> adapt(
 			@Valid @RequestBody AdaptationRequestDto request) {
 
-		GeneratedRecipe recipe = adaptationService.adapt(
+		AdaptationResult result = adaptationService.adapt(
 				request.recipeText(),
 				request.goal());
 
 		AdaptationResponseDto response = new AdaptationResponseDto(
+				result.id(),
 				request.goal(),
-				recipe);
+				result.recipe());
 
-		return ResponseEntity.ok(response);
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 }
