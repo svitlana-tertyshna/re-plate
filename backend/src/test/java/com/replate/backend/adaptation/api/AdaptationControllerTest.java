@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.replate.backend.adaptation.application.AdaptationService;
+import com.replate.backend.adaptation.application.model.AdaptationResult;
 import com.replate.backend.adaptation.application.model.GeneratedRecipe;
 import com.replate.backend.adaptation.domain.AdaptationGoal;
 
@@ -31,6 +33,8 @@ class AdaptationControllerTest {
 
 	@Test
 	void shouldAcceptValidRequest() throws Exception {
+
+		UUID id = UUID.randomUUID();
 
 		String request = """
 				{
@@ -47,16 +51,18 @@ class AdaptationControllerTest {
 				List.of("Demo only"));
 
 		when(adaptationService.adapt("200 g pasta.", AdaptationGoal.VEGAN))
-				.thenReturn(generated);
+				.thenReturn(new AdaptationResult(id, generated));
 
 		mockMvc.perform(
 				post("/api/v1/adaptations")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(request))
-				.andExpect(status().isOk())
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.id").value(id.toString()))
 				.andExpect(jsonPath("$.goal").value("VEGAN"))
 				.andExpect(jsonPath("$.recipe.title").value("Demo Vegan Pasta"))
-				.andExpect(jsonPath("$.recipe.ingredients[0]").value("200 g egg-free pasta"));
+				.andExpect(jsonPath("$.recipe.ingredients[0]")
+						.value("200 g egg-free pasta"));
 
 		verify(adaptationService)
 				.adapt("200 g pasta.", AdaptationGoal.VEGAN);
