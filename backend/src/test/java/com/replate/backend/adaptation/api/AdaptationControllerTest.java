@@ -36,6 +36,8 @@ class AdaptationControllerTest {
 
 		UUID id = UUID.randomUUID();
 
+		AdaptationGoal goal = AdaptationGoal.VEGAN;
+
 		String request = """
 				{
 				  "recipeText": "200 g pasta.",
@@ -50,8 +52,8 @@ class AdaptationControllerTest {
 				List.of("Replaced regular pasta"),
 				List.of("Demo only"));
 
-		when(adaptationService.adapt("200 g pasta.", AdaptationGoal.VEGAN))
-				.thenReturn(new AdaptationResult(id, generated));
+		when(adaptationService.adapt("200 g pasta.", goal))
+				.thenReturn(new AdaptationResult(id, goal, generated));
 
 		mockMvc.perform(
 				post("/api/v1/adaptations")
@@ -65,7 +67,7 @@ class AdaptationControllerTest {
 						.value("200 g egg-free pasta"));
 
 		verify(adaptationService)
-				.adapt("200 g pasta.", AdaptationGoal.VEGAN);
+				.adapt("200 g pasta.", goal);
 	}
 
 	@Test

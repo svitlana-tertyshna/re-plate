@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import com.replate.backend.adaptation.application.exception.AdaptationNotFoundException;
 import com.replate.backend.adaptation.application.model.AdaptationResult;
 import com.replate.backend.adaptation.application.model.GeneratedRecipe;
-import com.replate.backend.adaptation.application.model.StoredAdaptation;
 import com.replate.backend.adaptation.application.port.RecipeGenerator;
 import com.replate.backend.adaptation.domain.AdaptationGoal;
 
@@ -27,10 +26,10 @@ public class AdaptationService {
 
 		UUID adaptationId = persistenceService.save(recipeText, goal, generated);
 
-		return new AdaptationResult(adaptationId, generated);
+		return new AdaptationResult(adaptationId, goal, generated);
 	}
 
-	public StoredAdaptation getAdaptation(UUID id) {
+	public AdaptationResult getAdaptation(UUID id) {
 
 		return persistenceService.findById(id)
 				.orElseThrow(() -> new AdaptationNotFoundException(id));

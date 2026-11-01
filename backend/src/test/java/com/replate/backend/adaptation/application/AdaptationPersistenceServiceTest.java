@@ -14,8 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.replate.backend.adaptation.application.model.AdaptationResult;
 import com.replate.backend.adaptation.application.model.GeneratedRecipe;
-import com.replate.backend.adaptation.application.model.StoredAdaptation;
 import com.replate.backend.adaptation.domain.AdaptationGoal;
 import com.replate.backend.adaptation.infrastructure.persistence.AdaptationEntity;
 import com.replate.backend.adaptation.infrastructure.persistence.AdaptationRepository;
@@ -104,7 +104,7 @@ class AdaptationPersistenceServiceTest {
 		entityManager.clear();
 
 		// Act
-		StoredAdaptation stored = persistenceService
+		AdaptationResult stored = persistenceService
 				.findById(id)
 				.orElseThrow();
 
@@ -121,7 +121,7 @@ class AdaptationPersistenceServiceTest {
 		UUID unknownId = UUID.randomUUID();
 
 		// Act
-		Optional<StoredAdaptation> result = persistenceService.findById(unknownId);
+		Optional<AdaptationResult> result = persistenceService.findById(unknownId);
 
 		// Assert
 		assertTrue(result.isEmpty());
