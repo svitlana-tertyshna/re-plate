@@ -17,7 +17,7 @@ import com.replate.backend.adaptation.application.exception.AdaptationNotFoundEx
 public class GlobalExceptionHandler {
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<ValidationErrorResponse> handleValidation(
+	public ResponseEntity<ApiErrorResponse> handleValidation(
 			MethodArgumentNotValidException exception) {
 		Map<String, String> errors = new LinkedHashMap<>();
 
@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
 						error.getField(),
 						error.getDefaultMessage()));
 
-		ValidationErrorResponse response = new ValidationErrorResponse(
+		ApiErrorResponse response = new ApiErrorResponse(
 				400,
 				"Validation failed",
 				errors);
@@ -36,9 +36,9 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(HttpMessageNotReadableException.class)
-	public ResponseEntity<ValidationErrorResponse> handleUnreadableMessage(
+	public ResponseEntity<ApiErrorResponse> handleUnreadableMessage(
 			HttpMessageNotReadableException exception) {
-		ValidationErrorResponse response = new ValidationErrorResponse(
+		ApiErrorResponse response = new ApiErrorResponse(
 				400,
 				"Invalid request body",
 				Map.of(
@@ -49,10 +49,10 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(AdaptationNotFoundException.class)
-	public ResponseEntity<ValidationErrorResponse> handleAdaptationNotFound(
+	public ResponseEntity<ApiErrorResponse> handleAdaptationNotFound(
 			AdaptationNotFoundException exception) {
 
-		ValidationErrorResponse response = new ValidationErrorResponse(
+		ApiErrorResponse response = new ApiErrorResponse(
 				404,
 				"Adaptation not found",
 				Map.of("id", exception.getMessage()));

@@ -18,7 +18,6 @@ import com.replate.backend.adaptation.application.AdaptationService;
 import com.replate.backend.adaptation.application.exception.AdaptationNotFoundException;
 import com.replate.backend.adaptation.application.model.AdaptationResult;
 import com.replate.backend.adaptation.application.model.GeneratedRecipe;
-import com.replate.backend.adaptation.application.model.StoredAdaptation;
 import com.replate.backend.adaptation.application.port.RecipeGenerator;
 import com.replate.backend.adaptation.domain.AdaptationGoal;
 
@@ -52,6 +51,7 @@ class AdaptationServiceTest {
 		AdaptationResult actual = service.adapt(recipeText, goal);
 
 		assertEquals(savedId, actual.id());
+		assertEquals(goal, actual.goal());
 		assertSame(expected, actual.recipe());
 		verify(generator).generate(recipeText, goal);
 		verify(persistenceService).save(recipeText, goal, expected);
@@ -76,7 +76,7 @@ class AdaptationServiceTest {
 				List.of("Replaced dairy cream"),
 				List.of());
 
-		StoredAdaptation expected = new StoredAdaptation(
+		AdaptationResult expected = new AdaptationResult(
 				id,
 				AdaptationGoal.VEGAN,
 				generated);
@@ -85,7 +85,7 @@ class AdaptationServiceTest {
 				.thenReturn(Optional.of(expected));
 
 		// Act
-		StoredAdaptation actual = service.getAdaptation(id);
+		AdaptationResult actual = service.getAdaptation(id);
 
 		// Assert
 		assertSame(expected, actual);

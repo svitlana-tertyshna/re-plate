@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.replate.backend.adaptation.application.AdaptationService;
 import com.replate.backend.adaptation.application.model.AdaptationResult;
-import com.replate.backend.adaptation.application.model.StoredAdaptation;
 
 import jakarta.validation.Valid;
 
@@ -37,7 +36,7 @@ public class AdaptationController {
 
 		AdaptationResponseDto response = new AdaptationResponseDto(
 				result.id(),
-				request.goal(),
+				result.goal(),
 				result.recipe());
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -47,7 +46,7 @@ public class AdaptationController {
 	public ResponseEntity<AdaptationResponseDto> getAdaptation(
 			@PathVariable UUID id) {
 
-		StoredAdaptation stored = adaptationService.getAdaptation(id);
+		AdaptationResult stored = adaptationService.getAdaptation(id);
 
 		AdaptationResponseDto response = new AdaptationResponseDto(
 				stored.id(),

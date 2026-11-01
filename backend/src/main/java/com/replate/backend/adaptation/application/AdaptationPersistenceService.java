@@ -6,8 +6,8 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.replate.backend.adaptation.application.model.AdaptationResult;
 import com.replate.backend.adaptation.application.model.GeneratedRecipe;
-import com.replate.backend.adaptation.application.model.StoredAdaptation;
 import com.replate.backend.adaptation.domain.AdaptationGoal;
 import com.replate.backend.adaptation.infrastructure.persistence.AdaptationEntity;
 import com.replate.backend.adaptation.infrastructure.persistence.AdaptationRepository;
@@ -46,10 +46,10 @@ public class AdaptationPersistenceService {
 	}
 
 	@Transactional(readOnly = true)
-	public Optional<StoredAdaptation> findById(UUID id) {
+	public Optional<AdaptationResult> findById(UUID id) {
 
 		return adaptationRepository.findById(id)
-				.map(entity -> new StoredAdaptation(
+				.map(entity -> new AdaptationResult(
 						entity.getId(),
 						entity.getGoal(),
 						entity.getGeneratedRecipe()));
