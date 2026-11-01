@@ -4,11 +4,14 @@ package com.replate.backend.api.error;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import com.replate.backend.adaptation.application.exception.AdaptationNotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -43,6 +46,18 @@ public class GlobalExceptionHandler {
 						"Invalid JSON or unsupported field value"));
 
 		return ResponseEntity.badRequest().body(response);
+	}
+
+	@ExceptionHandler(AdaptationNotFoundException.class)
+	public ResponseEntity<ValidationErrorResponse> handleAdaptationNotFound(
+			AdaptationNotFoundException exception) {
+
+		ValidationErrorResponse response = new ValidationErrorResponse(
+				404,
+				"Adaptation not found",
+				Map.of("id", exception.getMessage()));
+
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
 	}
 
 }

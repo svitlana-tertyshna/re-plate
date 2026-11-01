@@ -2,6 +2,7 @@
 package com.replate.backend.adaptation.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -31,7 +32,7 @@ class AdaptationWorkflowIntegrationTest {
 	private JdbcTemplate jdbcTemplate;
 
 	@Test
-	void shouldPersistAdaptationFromHttpRequest() throws Exception {
+	void shouldPersistAndRetrieveAdaptationFromHttpRequest() throws Exception {
 
 		String originalText = "Test curry " + UUID.randomUUID();
 
@@ -71,6 +72,14 @@ class AdaptationWorkflowIntegrationTest {
 			assertEquals("VEGAN", stored.get("goal"));
 			assertEquals("Demo Vegan Pasta", stored.get("title"));
 
+			mockMvc.perform(
+					get("/api/v1/adaptations/{id}", returnedId))
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.id").value(returnedId))
+					.andExpect(jsonPath("$.goal").value("VEGAN"))
+					.andExpect(jsonPath("$.recipe.title")
+							.value("Demo Vegan Pasta"));
+
 		} finally {
 			jdbcTemplate.update("""
 					DELETE FROM adaptations
@@ -85,4 +94,30 @@ class AdaptationWorkflowIntegrationTest {
 					originalText);
 		}
 	}
+
+	@Test
+	void shouldReturn404WhenAdaptationDoesNotExist() throws Exception {
+
+		// Arrange
+		UUID unknownId = UUID.randomUUID();
+
+		// Act and Assert
+		mockMvc.perform(
+				get("/api/v1/adaptations/{id}", unknownId))
+				.andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.status").value(404))
+				.andExpect(jsonPath("$.title")
+						.value("Adaptation not found"))
+				.andExpect(jsonPath("$.errors.id")
+						.value("Adaptation not found: " + unknownId));
+	}
+
+	@Test
+	void shouldReturn400ForInvalidAdaptationId() throws Exception {
+
+		mockMvc.perform(
+				get("/api/v1/adaptations/{id}", "not-a-uuid"))
+				.andExpect(status().isBadRequest());
+	}
+
 }

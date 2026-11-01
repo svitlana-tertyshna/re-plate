@@ -4,8 +4,10 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.replate.backend.adaptation.application.exception.AdaptationNotFoundException;
 import com.replate.backend.adaptation.application.model.AdaptationResult;
 import com.replate.backend.adaptation.application.model.GeneratedRecipe;
+import com.replate.backend.adaptation.application.model.StoredAdaptation;
 import com.replate.backend.adaptation.application.port.RecipeGenerator;
 import com.replate.backend.adaptation.domain.AdaptationGoal;
 
@@ -27,4 +29,11 @@ public class AdaptationService {
 
 		return new AdaptationResult(adaptationId, generated);
 	}
+
+	public StoredAdaptation getAdaptation(UUID id) {
+
+		return persistenceService.findById(id)
+				.orElseThrow(() -> new AdaptationNotFoundException(id));
+	}
+
 }
