@@ -2,6 +2,7 @@ package com.replate.backend.adaptation.infrastructure.fake;
 
 import java.util.List;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.replate.backend.adaptation.application.model.GeneratedRecipe;
@@ -9,6 +10,7 @@ import com.replate.backend.adaptation.application.port.RecipeGenerator;
 import com.replate.backend.adaptation.domain.AdaptationGoal;
 
 @Component
+@Profile("!ai")
 public class FakeRecipeGenerator implements RecipeGenerator {
 
 	@Override
