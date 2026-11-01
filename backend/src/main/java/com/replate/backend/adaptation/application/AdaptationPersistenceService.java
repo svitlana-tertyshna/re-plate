@@ -1,11 +1,13 @@
 package com.replate.backend.adaptation.application;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.replate.backend.adaptation.application.model.GeneratedRecipe;
+import com.replate.backend.adaptation.application.model.StoredAdaptation;
 import com.replate.backend.adaptation.domain.AdaptationGoal;
 import com.replate.backend.adaptation.infrastructure.persistence.AdaptationEntity;
 import com.replate.backend.adaptation.infrastructure.persistence.AdaptationRepository;
@@ -41,5 +43,15 @@ public class AdaptationPersistenceService {
 		AdaptationEntity saved = adaptationRepository.save(adaptation);
 
 		return saved.getId();
+	}
+
+	@Transactional(readOnly = true)
+	public Optional<StoredAdaptation> findById(UUID id) {
+
+		return adaptationRepository.findById(id)
+				.map(entity -> new StoredAdaptation(
+						entity.getId(),
+						entity.getGoal(),
+						entity.getGeneratedRecipe()));
 	}
 }

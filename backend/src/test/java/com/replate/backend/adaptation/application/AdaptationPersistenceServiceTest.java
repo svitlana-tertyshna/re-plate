@@ -3,8 +3,10 @@ package com.replate.backend.adaptation.application;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.replate.backend.adaptation.application.model.GeneratedRecipe;
+import com.replate.backend.adaptation.application.model.StoredAdaptation;
 import com.replate.backend.adaptation.domain.AdaptationGoal;
 import com.replate.backend.adaptation.infrastructure.persistence.AdaptationEntity;
 import com.replate.backend.adaptation.infrastructure.persistence.AdaptationRepository;
@@ -79,4 +82,49 @@ class AdaptationPersistenceServiceTest {
 		assertEquals(recipesBefore, recipeRepository.count());
 		assertEquals(adaptationsBefore, adaptationRepository.count());
 	}
+
+	@Test
+	@Transactional
+	void shouldFindStoredAdaptationById() {
+
+		// Arrange
+		GeneratedRecipe generated = new GeneratedRecipe(
+				"Demo Vegan Pasta",
+				List.of("Pasta", "Oat cream"),
+				List.of("Cook pasta", "Add oat cream"),
+				List.of("Replaced dairy cream"),
+				List.of("Demo data"));
+
+		UUID id = persistenceService.save(
+				"Pasta with cream",
+				AdaptationGoal.VEGAN,
+				generated);
+
+		entityManager.flush();
+		entityManager.clear();
+
+		// Act
+		StoredAdaptation stored = persistenceService
+				.findById(id)
+				.orElseThrow();
+
+		// Assert
+		assertEquals(id, stored.id());
+		assertEquals(AdaptationGoal.VEGAN, stored.goal());
+		assertEquals("Demo Vegan Pasta", stored.recipe().title());
+	}
+
+	@Test
+	void shouldReturnEmptyWhenAdaptationNotFound() {
+
+		// Arrange
+		UUID unknownId = UUID.randomUUID();
+
+		// Act
+		Optional<StoredAdaptation> result = persistenceService.findById(unknownId);
+
+		// Assert
+		assertTrue(result.isEmpty());
+	}
+
 }
