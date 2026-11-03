@@ -1,0 +1,32 @@
+info:
+  name: 00 - Connection Check
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/v1/adaptations/00000000-0000-0000-0000-000000000000"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("Returns 404 for unknown adaptation", () => {
+            expect(res.getStatus()).to.equal(404);
+        });
+
+        test("Returns our standard error response", () => {
+            const body = res.getBody();
+
+            expect(body.status).to.equal(404);
+            expect(body.title).to.equal("Adaptation not found");
+            expect(body.errors).to.have.property("id");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

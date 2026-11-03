@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.replate.backend.adaptation.application.exception.AdaptationNotFoundException;
+import com.replate.backend.adaptation.application.exception.AiGenerationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -58,6 +59,22 @@ public class GlobalExceptionHandler {
 				Map.of("id", exception.getMessage()));
 
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+	}
+
+	@ExceptionHandler(AiGenerationException.class)
+	public ResponseEntity<ApiErrorResponse> handleAiGenerationFailure(
+			AiGenerationException exception) {
+
+		ApiErrorResponse response = new ApiErrorResponse(
+				502,
+				"AI generation failed",
+				Map.of(
+						"generation",
+						"Unable to generate a recipe right now. Please try again later."));
+
+		return ResponseEntity
+				.status(HttpStatus.BAD_GATEWAY)
+				.body(response);
 	}
 
 }

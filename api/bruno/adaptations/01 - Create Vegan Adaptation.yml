@@ -1,0 +1,115 @@
+info:
+  name: 01 - Create Vegan Adaptation
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/adaptations"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |
+
+      {
+        "recipeText": "Ingredients: 200 g pasta, 150 g chicken breast, 100 ml dairy cream. Instructions: Cook the pasta. Fry the chicken. Add the cream and combine everything.",
+        "goal": "VEGAN"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("POST returns 201 Created", () => {
+            expect(res.getStatus()).to.equal(201);
+        });
+
+        test("Response contains a valid vegan recipe", () => {
+            const body = res.getBody();
+
+            expect(body.id).to.be.a("string").and.not.empty;
+            expect(body.goal).to.equal("VEGAN");
+
+            expect(body.recipe.title).to.be.a("string").and.not.empty;
+            expect(body.recipe.ingredients).to.be.an("array").that.is.not.empty;
+            expect(body.recipe.instructions).to.be.an("array").that.is.not.empty;
+            expect(body.recipe.changes).to.be.an("array").that.is.not.empty;
+            expect(body.recipe.warnings).to.be.an("array");
+        });
+
+        test("Save adaptation ID for the next request", () => {
+            const body = res.getBody();
+
+            expect(body.id).to.be.a("string").and.not.empty;
+            bru.setVar("adaptationId", body.id);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
+
+examples:
+  - name: 201-vegan-pasta-success
+    request:
+      url: "{{baseUrl}}/api/v1/adaptations"
+      method: POST
+      headers:
+        - name: Content-Type
+          value: application/json
+      body:
+        type: json
+        data: |
+
+          {
+            "recipeText": "Ingredients: 200 g pasta, 150 g chicken breast, 100 ml dairy cream. Instructions: Cook the pasta. Fry the chicken. Add the cream and combine everything.",
+            "goal": "VEGAN"
+          }
+    response:
+      status: 201
+      statusText: Created
+      headers:
+        - name: content-type
+          value: application/json
+        - name: transfer-encoding
+          value: chunked
+        - name: date
+          value: Tue, 03 Nov 2026 14:34:41 GMT
+        - name: keep-alive
+          value: timeout=60
+        - name: connection
+          value: keep-alive
+      body:
+        type: json
+        data: |-
+          {
+            "id": "f8cd9001-a632-4e77-b41f-940273da019c",
+            "goal": "VEGAN",
+            "recipe": {
+              "title": "Vegan Pasta with Tofu and Cream",
+              "ingredients": [
+                "200 g pasta",
+                "150 g firm tofu",
+                "100 ml coconut cream or cashew cream"
+              ],
+              "instructions": [
+                "Cook the pasta according to package instructions.",
+                "Cube the tofu and fry it until golden brown.",
+                "Add the coconut cream or cashew cream to the tofu and stir well.",
+                "Combine the cooked pasta with the tofu mixture."
+              ],
+              "changes": [
+                "Replaced chicken breast with 150 g of firm tofu.",
+                "Replaced dairy cream with 100 ml of coconut cream or cashew cream."
+              ],
+              "warnings": [
+                "Make sure to use firm tofu for the best texture.",
+                "Check for dairy-free labels on coconut or cashew cream to ensure they are vegan."
+              ]
+            }
+          }
