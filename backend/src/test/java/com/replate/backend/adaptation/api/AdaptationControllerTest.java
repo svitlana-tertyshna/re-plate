@@ -1,9 +1,12 @@
 package com.replate.backend.adaptation.api;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -18,6 +21,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.replate.backend.adaptation.application.AdaptationService;
+import com.replate.backend.adaptation.application.exception.AiGenerationException;
 import com.replate.backend.adaptation.application.model.AdaptationResult;
 import com.replate.backend.adaptation.application.model.GeneratedRecipe;
 import com.replate.backend.adaptation.domain.AdaptationGoal;
@@ -147,6 +151,35 @@ class AdaptationControllerTest {
 						.value("Invalid JSON or unsupported field value"));
 
 		verifyNoInteractions(adaptationService);
+	}
+
+	@Test
+	void shouldReturn502WhenAiGenerationFails() throws Exception {
+
+		String request = """
+				{
+				    "recipeText": "200 g pasta.",
+				    "goal": "VEGAN"
+				}
+				""";
+
+		when(adaptationService.adapt(
+				"200 g pasta.",
+				AdaptationGoal.VEGAN)).thenThrow(
+						new AiGenerationException("Provider authentication failed"));
+
+		mockMvc.perform(
+				post("/api/v1/adaptations")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(request))
+				.andExpect(status().isBadGateway())
+				.andExpect(jsonPath("$.status").value(502))
+				.andExpect(jsonPath("$.title")
+						.value("AI generation failed"))
+				.andExpect(jsonPath("$.errors.generation")
+						.value("Unable to generate a recipe right now. Please try again later."))
+				.andExpect(content().string(
+						not(containsString("Provider authentication failed"))));
 	}
 
 }
