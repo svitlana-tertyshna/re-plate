@@ -1,0 +1,54 @@
+info:
+  name: 02 - Create Calorie-Conscious Adaptation
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/adaptations"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |
+      {
+        "recipeText": "Ingredients: 200 g pasta, 150 g chicken breast, 200 ml heavy cream, 50 g Parmesan. Instructions: Cook the pasta, fry the chicken, prepare a creamy sauce, and combine everything.",
+        "goal": "CALORIE_CONSCIOUS"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("POST returns 201 Created", () => {
+            expect(res.getStatus()).to.equal(201);
+        });
+
+        test("Response contains a calorie-conscious recipe", () => {
+            const body = res.getBody();
+
+            expect(body.id).to.be.a("string").and.not.empty;
+            expect(body.goal).to.equal("CALORIE_CONSCIOUS");
+
+            expect(body.recipe.title).to.be.a("string").and.not.empty;
+            expect(body.recipe.ingredients).to.be.an("array").that.is.not.empty;
+            expect(body.recipe.instructions).to.be.an("array").that.is.not.empty;
+            expect(body.recipe.changes).to.be.an("array").that.is.not.empty;
+            expect(body.recipe.warnings).to.be.an("array");
+        });
+
+        test("Save calorie adaptation ID", () => {
+            const body = res.getBody();
+
+            expect(body.id).to.be.a("string").and.not.empty;
+            bru.setVar("calorieAdaptationId", body.id);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
