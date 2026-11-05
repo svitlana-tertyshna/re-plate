@@ -16,9 +16,10 @@ class RecipePromptBuilderTest {
 				AdaptationGoal.VEGAN);
 
 		assertTrue(prompt.contains("Goal: VEGAN"));
-		assertTrue(prompt.contains("animal-derived ingredients"));
-		assertTrue(prompt.contains("honey"));
-		assertTrue(prompt.contains("plant-based substitutions"));
+
+		assertTrue(prompt.contains("specific plant-based ingredients"));
+		assertTrue(prompt.contains("animal-derived components"));
+		assertTrue(prompt.contains("egg-free pasta"));
 
 		assertFalse(prompt.contains("Goal: CALORIE_CONSCIOUS"));
 	}

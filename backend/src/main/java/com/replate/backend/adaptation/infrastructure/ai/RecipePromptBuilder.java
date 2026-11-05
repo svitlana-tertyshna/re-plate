@@ -25,7 +25,16 @@ final class RecipePromptBuilder {
 					Goal: VEGAN.
 					Replace all animal-derived ingredients, including
 					meat, fish, dairy, eggs, honey, and gelatin.
+
 					Use practical plant-based substitutions.
+					Prefer specific plant-based ingredients over vague
+					descriptions such as "plant-based substitute".
+
+					Check all remaining ingredients for potential
+					animal-derived components.
+					When relevant, specify vegan-safe variants,
+					such as egg-free pasta.
+
 					Preserve flavor, texture, and structure where possible.
 					Flag uncertainty about packaged ingredients.
 					""";
