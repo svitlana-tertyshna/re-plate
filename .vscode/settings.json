@@ -15,5 +15,6 @@
         "editor.defaultFormatter": "redhat.vscode-xml",
         "editor.insertSpaces": false,
         "editor.tabSize": 4
-    }
+    },
+    "java.configuration.updateBuildConfiguration": "interactive"
 }
