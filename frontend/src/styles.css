@@ -1,0 +1,37 @@
+@import 'tailwindcss';
+
+/* RePlate — Sunday Club Design System */
+
+@theme {
+  /* Main brand colors */
+  --color-vanilla: #FFF0E5;
+  --color-berry: #A23E66;
+  --color-strawberry: #F9C9CD;
+  --color-pistachio: #D4E4BF;
+  --color-paper: #FFFBF5;
+  --color-plum: #432B3C;
+
+  /* Supporting colors */
+  --color-soft-peach: #F8DAB7;
+  --color-soft-chip: #F5E7D9;
+  --color-border-soft: #EDD6CE;
+  --color-text-muted: #674858;
+
+  /* Typography */
+  --font-display: 'Fraunces Variable', Georgia, serif;
+  --font-body: 'DM Sans Variable', Arial, sans-serif;
+
+  /* Shapes */
+  --radius-card: 1.5rem;
+  --radius-pill: 9999px;
+}
+
+/* Global defaults */
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--color-vanilla);
+  color: var(--color-plum);
+  font-family: var(--font-body);
+}
