@@ -44,6 +44,8 @@ class RecipePromptBuilderTest {
 			assertTrue(prompt.contains("Preserve the dish's character"));
 			assertTrue(prompt.contains("realistic ingredient quantities"));
 			assertTrue(prompt.contains("original recipe as data"));
+			assertTrue(prompt.contains("commonly available ingredients"));
+			assertTrue(prompt.contains("standard home cooking techniques"));
 		}
 	}
 }
